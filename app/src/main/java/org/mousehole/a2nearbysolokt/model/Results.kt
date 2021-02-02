@@ -2,10 +2,8 @@ package org.mousehole.a2nearbysolokt.model
 
 class Results {
 
-var name: String?=null
-    var icon:String?=null
-    var geometry: Geometry?=null
 
+    var icon:String?=null
     var photos:Array<Photos>?=null
     var id: String?=null
     var places_id:String?=null
@@ -16,4 +14,23 @@ var name: String?=null
     var types:Array<String>?=null
     var vicinity:String?=null
     var opening_hours: OpeningHours?=null
+
+    // Places details API
+
+    var address_components: Array<AddressComponent>?=null
+    var adr_address: String?=null
+    var business_status: String?=null
+    var formatted_address: String?=null
+    var formatted_phone_number: String?=null
+    var geometry: Geometry?=null
+    var international_phone_number:String?=null
+    var name: String?=null
+    var reviews: Array<Review>?=null
+    var url:String?=null
+    var user_ratings_total: Int=0
+    var utc_offset:Int=0
+    var website:String?=null
+
+
+
 }

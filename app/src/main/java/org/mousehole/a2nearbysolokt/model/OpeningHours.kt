@@ -5,5 +5,8 @@ class OpeningHours {
     //public bool open_now { get; set; }
 
     var open_now: Boolean=false
+    // places details api
+    var weekday_text: Array<String>?=null
+    var period: Array<Period>?=null
 
 }

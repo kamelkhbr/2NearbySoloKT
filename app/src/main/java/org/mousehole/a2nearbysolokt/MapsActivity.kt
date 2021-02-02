@@ -1,6 +1,9 @@
 package org.mousehole.a2nearbysolokt
 
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.location.Location
 import android.location.LocationListener
 import android.os.Build
@@ -8,6 +11,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
+import android.widget.AbsSeekBar
+import android.widget.SeekBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.cardview.widget.CardView
@@ -43,6 +49,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var mLastLocation: Location
     private var mMarker: Marker? = null
 
+    private var myRadius: Int = 10000
+
     //Location
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     lateinit var locationRequest: LocationRequest
@@ -58,7 +66,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var bottom_navigation_view: BottomNavigationView
 
-
+    private lateinit var seekBar: SeekBar
+    private lateinit var seekRadius: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +76,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
+
+        // Let's get our radius setup
+        seekRadius=findViewById(R.id.seek_radius)
+        seekBar = findViewById(R.id.seek_bar)
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar, progress: Int, fromUser: Boolean) {
+
+                seekRadius.text = "Radius: "+ (progress/1000).toString() + "km"
+                myRadius=progress
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
+                //Toast.makeText(this@MapsActivity, "Radius: " + seekBar.progress / 1000 + "km", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                Toast.makeText(this@MapsActivity, "Radius: " + seekBar.progress / 1000 + "km", Toast.LENGTH_SHORT).show()
+            }
+
+
+        } )
+
+
+
 
         // Init Service
         mServices = Common.googleAPIService
@@ -100,10 +133,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         bottom_navigation_view.setOnNavigationItemSelectedListener {item ->
             when(item.itemId)
             {
-                R.id.action_hospital -> nearByPlace("hospital")
-                R.id.action_market -> nearByPlace("market")
-                R.id.action_restaurant-> nearByPlace("restaurant")
-                R.id.action_school -> nearByPlace("school")
+                R.id.action_hospital -> nearByPlace("hospital", myRadius)
+                R.id.action_market -> nearByPlace("market", myRadius)
+                R.id.action_restaurant-> nearByPlace("restaurant", myRadius)
+                R.id.action_school -> nearByPlace("school", myRadius)
 
             }
             true
@@ -114,12 +147,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     // This is where all the fun begins
-    private fun nearByPlace(typePlace: String) {
+    private fun nearByPlace(typePlace: String, radius: Int) {
 
         // Clear all marker on Map
         mMap.clear()
         // Build URL request base on location
-        val url = getUrl(latitude,longitude, typePlace)
+        val url = getUrl(latitude,longitude, typePlace, radius)
 
         mServices.getNearbyPlaces(url)
             .enqueue(object: Callback<MyPlaces>{
@@ -141,10 +174,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             val lat= googlePlace.geometry!!.location!!.lat
                             val lng= googlePlace.geometry!!.location!!.lng
                             val placeName = googlePlace.name
-                            val latLng = LatLng(lng,lat)
+                            val latLng = LatLng(lat,lng)
 
                             markerOptions.position(latLng)
                             markerOptions.title(placeName)
+
                             if (typePlace.equals("hospital"))
                                 markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.hospital))
                             else if (typePlace.equals("market"))
@@ -163,7 +197,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                             // Move Camera
                             mMap!!.moveCamera(CameraUpdateFactory.newLatLng(latLng))
-                            mMap.animateCamera(CameraUpdateFactory.zoomTo(11f))
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(10f))
 
 
                         }
@@ -177,12 +211,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     }
 
-    private fun getUrl(latitude: Double, longitude: Double, typePlace: String): String {
+    private fun getUrl(latitude: Double, longitude: Double, typePlace: String, radius:Int): String {
         // Come back here and add everything to constants util
 
         val googlePlaceUrl = StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json")
         googlePlaceUrl.append("?location=$latitude,$longitude")
-        googlePlaceUrl.append("&radius=10000") // 10km
+        googlePlaceUrl.append("&radius=$radius") // 10km
         googlePlaceUrl.append("&type=$typePlace")
         googlePlaceUrl.append("&key=AIzaSyDh8h-16Q-uDkppVJsfPFjqS-U2OxSyfi8")
 
@@ -285,6 +319,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onStop()
     }
 
+
+// here where we make the map clickable
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -307,6 +343,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Enable zoom Control
         mMap.uiSettings.isZoomControlsEnabled=true
+        // Create event click on markers
+        mMap!!.setOnMarkerClickListener {marker ->
+
+            // When the user selects a marker, assign the result of the marker to a static variable
+            Common.currentResult = currentPlace!!.results!![Integer.parseInt(marker.snippet)]
+            // start new intent to the ViewPlace activity
+            startActivity(Intent(this, ViewPlace::class.java))
+            true
+
+
+        }
+
+
+
 
 
     }
