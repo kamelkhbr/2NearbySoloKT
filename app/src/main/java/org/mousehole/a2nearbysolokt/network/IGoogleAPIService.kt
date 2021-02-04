@@ -4,6 +4,7 @@ import retrofit2.Call
 import org.mousehole.a2nearbysolokt.model.MyPlaces
 import org.mousehole.a2nearbysolokt.model.PlacesDetail
 import retrofit2.http.GET
+import retrofit2.http.Query
 import retrofit2.http.Url
 
 interface IGoogleAPIService {
@@ -16,6 +17,7 @@ interface IGoogleAPIService {
     @GET
     fun getDetailPlace(@Url url:String): Call<PlacesDetail>
 
-
+    @GET("maps/api/directions/json")
+    fun getDirections(@Query("origin") origin: String, @Query("destination") destination:String): Call<String>
 
 }

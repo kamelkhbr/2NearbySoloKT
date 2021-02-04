@@ -31,7 +31,8 @@ class ViewPlace : AppCompatActivity() {
     private lateinit var place_address : TextView
     private lateinit var place_open_hour : TextView
     private lateinit var rating_bar : RatingBar
-    //private lateinit var btn_show_map : Button
+    private lateinit var btn_show_map : Button
+    private lateinit var btn_show_direction : Button
     private lateinit var photo : ImageView
 
 
@@ -43,29 +44,34 @@ class ViewPlace : AppCompatActivity() {
         place_address = findViewById(R.id.place_address)
         place_open_hour = findViewById(R.id.place_open_hour)
         rating_bar = findViewById(R.id.rating_bar)
-        //btn_show_map = findViewById(R.id.btn_show_map)
-        photo = findViewById(R.id.photo)
+        btn_show_map = findViewById(R.id.show_in_mapbtn)
+        btn_show_direction= findViewById(R.id.btn_view_direction)
 
+        photo = findViewById(R.id.photo)
 
         // Init service
         mService = org.mousehole.a2nearbysolokt.common.Common.googleAPIService
-        // Set text views to empty
 
+        // Set text views to empty
         place_name.text = ""
         place_address.text = ""
         place_open_hour.text = ""
 
 
-  /*      btn_show_map.setOnClickListener (View.OnClickListener {view ->
 
-            Log.d("TAG_X", "Button clicked")
-            // Open map intent to view details
-            Log.d("TAG_X", "Hi ${Uri.parse(mPlace!!.result!!.url)}")
+        btn_show_map.setOnClickListener {
+
             val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(mPlace!!.result!!.url))
-            mapIntent.setPackage("com.google.android.apps.maps")
             startActivity(mapIntent)
+        }
 
-        })*/
+        // take me to show direction map activity
+
+        btn_show_direction.setOnClickListener {
+
+            val viewDirection = Intent(this@ViewPlace, ViewDirections::class.java)
+            startActivity(viewDirection)
+        }
 
 
 

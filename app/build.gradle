@@ -15,6 +15,7 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     buildTypes {
@@ -42,7 +43,12 @@ dependencies {
     //Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.retrofit2:adapter-rxjava2:2.6.2"
+    // Retrofit - for the new Retrofit client with scalars converter to convert json directions
+    implementation "com.squareup.retrofit2:converter-scalars:2.9.0"
+    implementation "com.github.d-max:spots-dialog:0.7@aar"
+
+
+    implementation "com.squareup.retrofit2:adapter-rxjava2:2.9.0"
 
     // Picasso first time using it :D
     implementation 'com.squareup.picasso:picasso:2.71828'

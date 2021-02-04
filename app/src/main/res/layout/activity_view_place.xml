@@ -51,6 +51,19 @@
                 android:max="5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/show_in_mapbtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Show in map"/>
+
+            <Button
+                android:id="@+id/btn_view_direction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Go there"
+                />
+
 
        </LinearLayout>
 

@@ -228,7 +228,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun buildLocationCallBack() {
         locationCallback = object : LocationCallback(){
             override fun onLocationResult(p0: LocationResult?) {
-                mLastLocation = p0!!.locations.get(p0!!.locations.size-1) // getting last location
+                mLastLocation = p0!!.lastLocation
 
                 if(mMarker!=null)
                 {
@@ -346,16 +346,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         // Create event click on markers
         mMap!!.setOnMarkerClickListener {marker ->
 
-            // When the user selects a marker, assign the result of the marker to a static variable
-            Common.currentResult = currentPlace!!.results!![Integer.parseInt(marker.snippet)]
-            // start new intent to the ViewPlace activity
-            startActivity(Intent(this, ViewPlace::class.java))
+            if (marker.snippet !=null ){
+                // When the user selects a marker, assign the result of the marker to a static variable
+                Common.currentResult = currentPlace!!.results!![Integer.parseInt(marker.snippet)]
+                // start new intent to the ViewPlace activity
+                startActivity(Intent(this, ViewPlace::class.java))
+            }
             true
 
 
         }
-
-
 
 
 
